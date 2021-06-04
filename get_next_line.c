@@ -2,14 +2,15 @@
 
 char	*ft_free(char **r, char *buf)
 {
-	char *tmp;
+	char	*tmp;
 
 	tmp = *r;
 	*r = ft_strjoin(*r, buf);
 	free(tmp);
 	return (*r);
 }
-char *ft_get_line(char **r, char **line, int *flag)
+
+char	*ft_get_line(char **r, char **line, int *flag)
 {
 	char	*n;
 
@@ -17,7 +18,7 @@ char *ft_get_line(char **r, char **line, int *flag)
 		*flag = 0;
 	n = ft_strchr(*r, '\n');
 	if (*flag == 1)
-		return (*line) ;
+		return (*line);
 	if (n == 0)
 	{
 		*line = ft_strdup(*r);
@@ -33,19 +34,21 @@ char *ft_get_line(char **r, char **line, int *flag)
 
 int	ft_free_end(char **begin)
 {
-	free(*begin);
+	free (*begin);
 	return (0);
 }
 
-int 	get_next_line(int fd, char **line)
+int	get_next_line(int fd, char **line)
 {
 	char		buf[BUFF_SIZE + 1];
-	int 		result;
+	int			result;
 	char static	*remainder;
-	static int 	flag;
-	static char *begin;
+	static int	flag;
+	static char	*begin;
 
 	result = 1;
+	if (*line || fd < 0 || BUFF_SIZE <= 0)
+		return (-1);
 	if (!remainder)
 		remainder = ft_strdup("");
 	while (result)
@@ -54,7 +57,7 @@ int 	get_next_line(int fd, char **line)
 		if (result == -1)
 			return (-1);
 		if (result == 0)
-			break;
+			break ;
 		buf[result] = '\0';
 		remainder = ft_free(&remainder, buf);
 	}
@@ -64,23 +67,4 @@ int 	get_next_line(int fd, char **line)
 	if (!remainder)
 		return (ft_free_end(&begin));
 	return (1);
-}
-
-int	main()
-{
-	char	*line;
-	int		fd;
-	int		res;
-
-	line = NULL;
-	fd = open("text_try.txt", O_RDONLY);
-	while ((res = get_next_line(fd, &line)))
-	{
-		printf("%s : %i\n", line, res);
-		free(line);
-	}
-	get_next_line(fd, &line);
-	printf("%s : %i\n", line, res);
-	free(line);
-	return (0);
 }
