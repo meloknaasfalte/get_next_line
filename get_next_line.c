@@ -1,70 +1,109 @@
 #include "get_next_line.h"
 
-char	*ft_free(char **r, char *buf)
+void	ft_strclr(char *s)
 {
-	char	*tmp;
+	int			i;
 
-	tmp = *r;
-	*r = ft_strjoin(*r, buf);
-	free(tmp);
-	return (*r);
-}
-
-char	*ft_get_line(char **r, char **line, int *flag)
-{
-	char	*n;
-
-	if (!(*flag))
-		*flag = 0;
-	n = ft_strchr(*r, '\n');
-	if (*flag == 1)
-		return (*line);
-	if (n == 0)
+	i = 0;
+	while (s && *(s + i))
 	{
-		*line = ft_strdup(*r);
-		*r = NULL;
-		*flag = 1;
-		return (*line);
+		*(s + i) = '\0';
+		i++;
 	}
-	*n = '\0';
-	*line = ft_strdup(*r);
-	*r = n + 1;
-	return (*line);
 }
 
-int	ft_free_end(char **begin)
+void	ft_free(char **str, char *p)
 {
-	free (*begin);
-	return (0);
+	char		*tmp;
+
+	tmp = *str;
+	free (tmp);
+	tmp = NULL;
+	*str = p;
 }
 
-int	get_next_line(int fd, char **line)
+char	*check_remainder(char *remainder, char **line)
+{
+	char	*p_n;
+
+	p_n = NULL;
+	if (remainder)
+	{
+		p_n = ft_strchr(remainder, '\n');
+		if (p_n)
+		{
+			*p_n = '\0';
+			*line = ft_strdup(remainder);
+			ft_strcpy(remainder, ++p_n);
+		}
+		else
+		{
+			*line = ft_strdup(remainder);
+			ft_strclr(remainder);
+		}
+	}
+	else
+	{
+		*line = ft_strdup("");
+	}
+	return (p_n);
+}
+
+char	*ft_return(char **remainder, char *line, int result, char *filter)
+{
+	if (line[0] != filter[0] || result)
+		return (line);
+	if (*remainder)
+	{
+		free(*remainder);
+		*remainder = 0;
+	}
+	return (NULL);
+}
+
+char	*get_next_line(int fd)
 {
 	char		buf[BUFF_SIZE + 1];
 	int			result;
-	char static	*remainder;
-	static int	flag;
-	static char	*begin;
+	char		*p_n;
+	static char	*remainder;
+	char 		*line;
 
+	line = NULL;
 	result = 1;
-	if (*line || fd < 0 || BUFF_SIZE <= 0)
-		return (-1);
-	if (!remainder)
-		remainder = ft_strdup("");
-	while (result)
+	if (fd < 0 || BUFF_SIZE <= 0 || read(fd, buf, 0))
+		return (NULL);
+	p_n = check_remainder(remainder, &line);
+	while (result && !p_n)
 	{
 		result = read(fd, buf, BUFF_SIZE);
-		if (result == -1)
-			return (-1);
-		if (result == 0)
-			break ;
 		buf[result] = '\0';
-		remainder = ft_free(&remainder, buf);
+		p_n = ft_strchr(buf, '\n');
+		if (p_n)
+		{
+			*p_n = '\0';
+			ft_free(&remainder, ft_strdup(++p_n));
+		}
+		ft_free(&line, ft_strjoin(line, buf));
 	}
-	if (!begin)
-		begin = remainder;
-	*line = ft_get_line(&remainder, line, &flag);
-	if (!remainder)
-		return (ft_free_end(&begin));
-	return (1);
+	printf("(%s)\n {%s}\n", line, remainder);
+	return (ft_return(&remainder, line, result, ""));
 }
+//int main(void)
+//{
+//	int 	fd;
+//	char 	*res;
+//	int 	counter;
+//
+//	counter = 0;
+//	fd = open("text_try.txt", O_RDONLY);
+//	while (1)
+//	{
+//		res = get_next_line(fd);
+//		printf("#%i, res:  - %s\n", counter, res);
+//		free(res);
+//		counter++;
+//		if (res == NULL)
+//			break;
+//	}
+//}

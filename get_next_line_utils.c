@@ -28,7 +28,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (r);
 }
 
-char	*ft_strchr (const char *str, int ch)
+char	*ft_strchr(const char *str, int ch)
 {
 	size_t	i;
 	char	c;
@@ -70,4 +70,18 @@ char	*ft_strdup(const char *s)
 	}
 	ds[l] = '\0';
 	return (ds);
+}
+
+char	*ft_strcpy(char *dst, const char *src)
+{
+	int	i;
+
+	i = 0;
+	while (src[i])
+	{
+		dst[i] = src[i];
+		i++;
+	}
+	dst[i] = '\0';
+	return (dst);
 }
