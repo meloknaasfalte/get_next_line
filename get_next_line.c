@@ -51,8 +51,15 @@ char	*check_remainder(char *remainder, char **line)
 
 char	*ft_return(char **remainder, char *line, int result, char *filter)
 {
+	char *tmp;
+
 	if (line[0] != filter[0] || result)
+	{
+		tmp = line;
+		line = ft_strjoin(line, "\n");
+		free(tmp);
 		return (line);
+	}
 	if (*remainder)
 	{
 		free(*remainder);
@@ -86,24 +93,23 @@ char	*get_next_line(int fd)
 		}
 		ft_free(&line, ft_strjoin(line, buf));
 	}
-	printf("(%s)\n {%s}\n", line, remainder);
 	return (ft_return(&remainder, line, result, ""));
 }
-//int main(void)
-//{
-//	int 	fd;
-//	char 	*res;
-//	int 	counter;
-//
-//	counter = 0;
-//	fd = open("text_try.txt", O_RDONLY);
-//	while (1)
-//	{
-//		res = get_next_line(fd);
-//		printf("#%i, res:  - %s\n", counter, res);
-//		free(res);
-//		counter++;
-//		if (res == NULL)
-//			break;
-//	}
-//}
+int main(void)
+{
+	int 	fd;
+	char 	*res;
+	int 	counter;
+
+	counter = 0;
+	fd = open("text_try.txt", O_RDONLY);
+	while (1)
+	{
+		res = get_next_line(fd);
+		printf("#%i, res:  - %s", counter, res);
+		free(res);
+		counter++;
+		if (res == NULL)
+			break;
+	}
+}
