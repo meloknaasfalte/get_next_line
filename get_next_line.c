@@ -49,11 +49,13 @@ char	*check_remainder(char *remainder, char **line)
 	return (p_n);
 }
 
-char	*ft_return(char **remainder, char *line, int result, char *filter)
+char	*ft_return(char **remainder, char *line, int result)
 {
-	char *tmp;
+	char	*tmp;
 
-	if (line[0] != filter[0] || result)
+	if (!result && *line != '\0')
+		return (line);
+	if (*line != '\0' || result)
 	{
 		tmp = line;
 		line = ft_strjoin(line, "\n");
@@ -65,25 +67,27 @@ char	*ft_return(char **remainder, char *line, int result, char *filter)
 		free(*remainder);
 		*remainder = 0;
 	}
+	if (*line == '\0' || result)
+		free(line);
 	return (NULL);
 }
 
 char	*get_next_line(int fd)
 {
-	char		buf[BUFF_SIZE + 1];
+	char		buf[BUFFER_SIZE + 1];
 	int			result;
 	char		*p_n;
 	static char	*remainder;
-	char 		*line;
+	char		*line;
 
 	line = NULL;
 	result = 1;
-	if (fd < 0 || BUFF_SIZE <= 0 || read(fd, buf, 0))
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, buf, 0))
 		return (NULL);
 	p_n = check_remainder(remainder, &line);
 	while (result && !p_n)
 	{
-		result = read(fd, buf, BUFF_SIZE);
+		result = read(fd, buf, BUFFER_SIZE);
 		buf[result] = '\0';
 		p_n = ft_strchr(buf, '\n');
 		if (p_n)
@@ -93,23 +97,5 @@ char	*get_next_line(int fd)
 		}
 		ft_free(&line, ft_strjoin(line, buf));
 	}
-	return (ft_return(&remainder, line, result, ""));
-}
-int main(void)
-{
-	int 	fd;
-	char 	*res;
-	int 	counter;
-
-	counter = 0;
-	fd = open("text_try.txt", O_RDONLY);
-	while (1)
-	{
-		res = get_next_line(fd);
-		printf("#%i, res:  - %s", counter, res);
-		free(res);
-		counter++;
-		if (res == NULL)
-			break;
-	}
+	return (ft_return(&remainder, line, result));
 }

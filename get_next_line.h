@@ -6,7 +6,10 @@
 # include <stdlib.h>
 # include <fcntl.h>
 # include <string.h>
-# define	BUFF_SIZE 1000
+
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 20
+# endif
 
 char	*get_next_line(int fd);
 char	*ft_strjoin(char const *s1, char const *s2);
